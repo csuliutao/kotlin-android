@@ -1,8 +1,10 @@
-package com.csu.liutao.cotlin.views
+package com.csu.liutao.kotlin.views
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.view.WindowManager
 import android.widget.ImageView
 
 class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -28,6 +30,10 @@ class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun onDraw(canvas: Canvas?) {
+        if (drawable == null) return
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val dm = DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm);
         val layerId =
             canvas!!.saveLayer(0F, 0F, measuredWidth.toFloat(), measuredHeight.toFloat(), paint)
         // 绘制圆形图层
@@ -38,10 +44,16 @@ class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 
-        // 绘制图片
+        // 图片需显示部分左上角移动到裁剪区域左上角，不缩放图片
+        val widthD = drawable.bounds.right - drawable.bounds.left
+        val heightD = drawable.bounds.bottom - drawable.bounds.top
         val srcBmp = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
         val srcCanvas = Canvas(srcBmp)
+        srcCanvas.save()
+        srcCanvas.translate(- widthD / 2 + radius * dm.density, - heightD / 2 + radius * dm.density)
         drawable.draw(srcCanvas)
+        srcCanvas.restore()
+
         canvas!!.drawBitmap(srcBmp, 0F, 0F, paint)
 
         paint.xfermode = null
