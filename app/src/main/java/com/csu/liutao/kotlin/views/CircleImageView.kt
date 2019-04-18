@@ -3,16 +3,15 @@ package com.csu.liutao.kotlin.views
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.view.WindowManager
+import android.view.ViewManager
 import android.widget.ImageView
+import org.jetbrains.anko.custom.ankoView
 
 class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     ImageView(context, attrs, defStyleAttr) {
     var radius = 0F
     var centerX = 0F
     var centerY = 0F
-    var paint = Paint()
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null)
@@ -31,11 +30,12 @@ class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 
     override fun onDraw(canvas: Canvas?) {
         if (drawable == null) return
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val dm = DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(dm);
+        val paint = Paint()
+        paint.isAntiAlias = true
+
+
         val layerId =
-            canvas!!.saveLayer(0F, 0F, measuredWidth.toFloat(), measuredHeight.toFloat(), paint)
+            canvas!!.saveLayer(centerX - radius, centerY - radius, centerX + radius, centerY + radius, paint)
         // 绘制圆形图层
         val dstBmp = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
         val dstCanvas = Canvas(dstBmp)
@@ -45,18 +45,21 @@ class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 
         // 图片需显示部分左上角移动到裁剪区域左上角，不缩放图片
-        val widthD = drawable.bounds.right - drawable.bounds.left
-        val heightD = drawable.bounds.bottom - drawable.bounds.top
-        val srcBmp = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+        val srcBmp = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val srcCanvas = Canvas(srcBmp)
-        srcCanvas.save()
-        srcCanvas.translate(- widthD / 2 + radius * dm.density, - heightD / 2 + radius * dm.density)
         drawable.draw(srcCanvas)
-        srcCanvas.restore()
 
-        canvas!!.drawBitmap(srcBmp, 0F, 0F, paint)
+        val temMatrix = Matrix()
+        temMatrix.postTranslate(centerX - drawable.intrinsicWidth / 2, centerY - drawable.intrinsicHeight / 2)
+        val tempScale = radius * 2 / Math.min(srcBmp.width, srcBmp.height)
+        temMatrix.postScale(tempScale, tempScale, centerX, centerY)
+        canvas!!.drawBitmap(srcBmp, temMatrix, paint)
 
         paint.xfermode = null
         canvas!!.restoreToCount(layerId)
     }
+}
+
+inline fun ViewManager.circleImageView(theme: Int = 0, init: CircleImageView.() -> Unit): CircleImageView {
+    return ankoView({ CircleImageView(it) }, theme, init)
 }

@@ -2,12 +2,10 @@ package com.csu.liutao.kotlin.views
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.BitmapDrawable
-import android.support.v4.content.ContextCompat.getSystemService
 import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.view.WindowManager
+import android.view.ViewManager
 import android.widget.ImageView
+import org.jetbrains.anko.custom.ankoView
 
 class CircleShapeImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     ImageView(context, attrs, defStyleAttr) {
@@ -17,30 +15,28 @@ class CircleShapeImageView(context: Context, attrs: AttributeSet?, defStyleAttr:
     override fun onDraw(canvas: Canvas?) {
         if (drawable == null) return
 
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val dm = DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(dm);
-
-        val centerX = (measuredWidth.toFloat() - paddingLeft - paddingRight) / 2
-        var centerY = (measuredHeight.toFloat() - paddingBottom - paddingTop) / 2
+        val centerX = measuredWidth.toFloat() / 2
+        var centerY = measuredHeight.toFloat() / 2
         val radius = if (centerX > centerY) centerY else centerX
 
-        val widthD = drawable.bounds.right - drawable.bounds.left
-        val heightD = drawable.bounds.bottom - drawable.bounds.top
-        val bitmap = Bitmap.createBitmap(widthD, heightD, Bitmap.Config.ARGB_8888)
-        val bitmapC = Canvas(bitmap)
-        drawable.draw(bitmapC)
+        val srcBmp = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val srcCanvas = Canvas(srcBmp)
+        drawable.draw(srcCanvas)
 
-        // 获取需要显示图片区域（最大正方形），未缩放
-        val dstBitmap = Bitmap.createBitmap(
-            bitmap, (widthD / 2 - radius * dm.density).toInt(),
-            (heightD / 2 - radius * dm.density).toInt(),
-            (2 * radius * dm.density).toInt(),
-            (2 * radius * dm.density).toInt()
-        )
+        val tempMatrix = Matrix()
+        tempMatrix.postTranslate(centerX - srcBmp.width / 2, centerY - srcBmp.height / 2)
+        val tempScale = radius * 2 / Math.min(srcBmp.width, srcBmp.height)
+        tempMatrix.postScale(tempScale, tempScale, centerX, centerY)
+
         val paint = Paint()
-        paint.shader = BitmapShader(dstBitmap, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR)
+        paint.isAntiAlias = true
+        paint.shader = BitmapShader(srcBmp, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR)
+        paint.shader.setLocalMatrix(tempMatrix)
 
-        canvas!!.drawCircle(centerX + paddingLeft, centerY + paddingTop, radius, paint)
+        canvas!!.drawCircle(centerX, centerY, radius, paint)
     }
+}
+
+inline fun ViewManager.circleShapeImageView(theme : Int = 0, init : CircleShapeImageView.() -> Unit) : CircleShapeImageView {
+    return ankoView({CircleShapeImageView(it)},theme, init)
 }
