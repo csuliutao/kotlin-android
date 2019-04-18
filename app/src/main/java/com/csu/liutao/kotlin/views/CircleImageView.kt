@@ -4,35 +4,14 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.ViewManager
-import android.widget.ImageView
 import org.jetbrains.anko.custom.ankoView
 
-class CircleImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
-    ImageView(context, attrs, defStyleAttr) {
-    var radius = 0F
-    var centerX = 0F
-    var centerY = 0F
-
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context) : this(context, null)
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        compute()
-    }
-
-    private fun compute() {
-        val minValue = if (measuredHeight > measuredWidth) measuredWidth else measuredHeight
-        radius = minValue.toFloat() / 2
-        centerX = measuredWidth.toFloat() / 2
-        centerY = measuredHeight.toFloat() / 2
-    }
+class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseImageView(context, attrs, defStyleAttr) {
 
     override fun onDraw(canvas: Canvas?) {
         if (drawable == null) return
         val paint = Paint()
         paint.isAntiAlias = true
-
 
         val layerId =
             canvas!!.saveLayer(centerX - radius, centerY - radius, centerX + radius, centerY + radius, paint)

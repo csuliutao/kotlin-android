@@ -7,17 +7,10 @@ import android.view.ViewManager
 import android.widget.ImageView
 import org.jetbrains.anko.custom.ankoView
 
-class CircleShapeImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
-    ImageView(context, attrs, defStyleAttr) {
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context) : this(context, null)
+class CircleShapeImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseImageView(context, attrs, defStyleAttr) {
 
     override fun onDraw(canvas: Canvas?) {
         if (drawable == null) return
-
-        val centerX = measuredWidth.toFloat() / 2
-        var centerY = measuredHeight.toFloat() / 2
-        val radius = if (centerX > centerY) centerY else centerX
 
         val srcBmp = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val srcCanvas = Canvas(srcBmp)

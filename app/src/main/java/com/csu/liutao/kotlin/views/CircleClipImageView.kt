@@ -7,16 +7,10 @@ import android.view.ViewManager
 import android.widget.ImageView
 import org.jetbrains.anko.custom.ankoView
 
-class CircleClipImageView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : ImageView(context, attrs, defStyleAttr) {
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context) : this(context, null)
+class CircleClipImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseImageView(context, attrs, defStyleAttr) {
 
     override fun onDraw(canvas: Canvas?) {
         if (drawable == null) return
-        val centerX = measuredWidth.toFloat() / 2
-        var centerY = measuredHeight.toFloat() / 2
-        val radius = if (centerX > centerY) centerY else centerX
-
         canvas!!.save()
         val path = Path()
         path.addCircle(centerX, centerY, radius, Path.Direction.CW)
