@@ -2,7 +2,7 @@ package com.csu.liutao.kviews.drawables
 
 import android.graphics.*
 
-class CircleShaderDrawable: CircleDrawable() {
+class CircleImageShaderDrawable: CircleDrawable() {
     override fun draw(canvas: Canvas) {
         if (drawable == null) return
         val srcBmp = Bitmap.createBitmap(drawable!!.intrinsicWidth, drawable!!.intrinsicHeight, Bitmap.Config.ARGB_8888)

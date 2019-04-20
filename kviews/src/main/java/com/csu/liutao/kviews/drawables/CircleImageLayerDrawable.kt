@@ -2,7 +2,7 @@ package com.csu.liutao.kviews.drawables
 
 import android.graphics.*
 
-class CircleLayerDrawable: CircleDrawable(){
+class CircleImageLayerDrawable: CircleDrawable(){
     override fun draw(canvas: Canvas) {
         if (drawable == null) return
         val paint = Paint()

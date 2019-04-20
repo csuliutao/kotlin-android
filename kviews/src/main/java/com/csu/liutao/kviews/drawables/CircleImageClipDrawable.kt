@@ -2,7 +2,7 @@ package com.csu.liutao.kviews.drawables
 
 import android.graphics.*
 
-class CircleClipDrawable: CircleDrawable() {
+class CircleImageClipDrawable: CircleDrawable() {
     override fun draw(canvas: Canvas) {
         if (drawable == null) return
         canvas.save()

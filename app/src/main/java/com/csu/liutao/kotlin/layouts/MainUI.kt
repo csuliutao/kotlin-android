@@ -5,9 +5,6 @@ import android.view.View
 import android.widget.LinearLayout
 import com.csu.liutao.cotlin.R
 import com.csu.liutao.kviews.circleImageView
-import com.csu.liutao.kviews.drawables.CircleClipDrawable
-import com.csu.liutao.kviews.drawables.CircleLayerDrawable
-import com.csu.liutao.kviews.drawables.CircleShaderDrawable
 import org.jetbrains.anko.*
 
 class MainUI : AnkoComponent<Activity> {
@@ -18,7 +15,6 @@ class MainUI : AnkoComponent<Activity> {
             circleImageView {
                 imageResource = R.mipmap.circle
                 padding = dip(25)
-//                circleDrawable = CircleLayerDrawable()
             }.lparams(width = dip(300), height = dip(200))
         }
     }
