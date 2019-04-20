@@ -15,7 +15,7 @@ abstract class CircleDrawable{
             if (value != null) {
                 centerX = value!!.exactCenterX()
                 centerY = value!!.exactCenterY()
-                radius = min(centerX - value.left, centerY - value.top)
+                radius = min(value.width(), value.height()).toFloat() / 2
             }
         }
     var drawable : Drawable? = null

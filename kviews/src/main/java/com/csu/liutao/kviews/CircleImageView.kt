@@ -12,9 +12,6 @@ import org.jetbrains.anko.custom.ankoView
 
 class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
     ImageView(context, attrs, defStyleAttr) {
-    var radius = 0F
-    var centerX = 0F
-    var centerY = 0F
     var circleDrawable: CircleDrawable = CircleImageShaderDrawable()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
