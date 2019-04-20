@@ -18,7 +18,7 @@ class MainUI : AnkoComponent<Activity> {
             circleImageView {
                 imageResource = R.mipmap.circle
                 padding = dip(25)
-                circleDrawable = CircleLayerDrawable()
+//                circleDrawable = CircleLayerDrawable()
             }.lparams(width = dip(300), height = dip(200))
         }
     }

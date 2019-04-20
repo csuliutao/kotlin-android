@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.ViewManager
 import android.widget.ImageView
 import com.csu.liutao.kviews.drawables.CircleDrawable
+import com.csu.liutao.kviews.drawables.CircleShaderDrawable
 import org.jetbrains.anko.custom.ankoView
 
 class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
@@ -14,7 +15,7 @@ class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAtt
     var radius = 0F
     var centerX = 0F
     var centerY = 0F
-    var circleDrawable: CircleDrawable? = null
+    var circleDrawable: CircleDrawable = CircleShaderDrawable()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         if (drawable != null) {
@@ -45,10 +46,9 @@ class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAtt
     }
 
     override fun onDraw(canvas: Canvas?) {
-        if (circleDrawable == null) return
-        circleDrawable!!.bounds = Rect(paddingLeft, paddingTop, measuredWidth - paddingRight, measuredHeight - paddingBottom)
-        circleDrawable!!.drawable = drawable
-        circleDrawable!!.draw(canvas!!)
+        circleDrawable.bounds = Rect(paddingLeft, paddingTop, measuredWidth - paddingRight, measuredHeight - paddingBottom)
+        circleDrawable.drawable = drawable
+        circleDrawable.draw(canvas!!)
     }
 }
 
