@@ -1,22 +1,21 @@
 package com.csu.liutao.kotlin.layouts
 
 import android.app.Activity
-import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import com.csu.liutao.cotlin.R
-import com.csu.liutao.kotlin.views.circleClipImageView
-import com.csu.liutao.kotlin.views.circleImageView
-import com.csu.liutao.kotlin.views.circleShapeImageView
+import com.csu.liutao.kviews.circleClipImageView
+import com.csu.liutao.kviews.circleImageView
+import com.csu.liutao.kviews.circleShapeImageView
 import org.jetbrains.anko.*
 
 class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
         verticalLayout {
             lparams(matchParent, matchParent)
-//            gravity = Gravity.CENTER
             orientation = LinearLayout.VERTICAL
             circleImageView {
+                isCenter = true
                 imageResource = R.mipmap.circle
                 padding = dip(15)
             }.lparams(width = dip(300), height = dip(200)) {

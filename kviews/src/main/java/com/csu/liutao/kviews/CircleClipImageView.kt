@@ -1,10 +1,9 @@
-package com.csu.liutao.kotlin.views
+package com.csu.liutao.kviews
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.ViewManager
-import android.widget.ImageView
 import org.jetbrains.anko.custom.ankoView
 
 class CircleClipImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseImageView(context, attrs, defStyleAttr) {
@@ -34,6 +33,6 @@ class CircleClipImageView(context: Context, attrs: AttributeSet? = null, defStyl
     }
 }
 
-inline fun ViewManager.circleClipImageView(theme : Int = 0, init : CircleClipImageView.() -> Unit) :CircleClipImageView {
-    return ankoView({CircleClipImageView(it)},theme,init)
+inline fun ViewManager.circleClipImageView(theme : Int = 0, init : CircleClipImageView.() -> Unit) : CircleClipImageView {
+    return ankoView({ CircleClipImageView(it) },theme,init)
 }

@@ -1,4 +1,4 @@
-package com.csu.liutao.kotlin.views
+package com.csu.liutao.kviews
 
 import android.content.Context
 import android.graphics.*
@@ -7,6 +7,7 @@ import android.view.ViewManager
 import org.jetbrains.anko.custom.ankoView
 
 class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseImageView(context, attrs, defStyleAttr) {
+    var isCenter : Boolean = false
 
     override fun onDraw(canvas: Canvas?) {
         if (drawable == null) return
