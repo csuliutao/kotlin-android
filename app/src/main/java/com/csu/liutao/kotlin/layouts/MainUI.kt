@@ -2,6 +2,7 @@ package com.csu.liutao.kotlin.layouts
 
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.LinearLayout
 import com.csu.liutao.cotlin.R
@@ -19,26 +20,27 @@ class MainUI : AnkoComponent<Activity> {
             ringProgressView {
                 padding = dip(20)
                 progress = 90
-            }.lparams(width = dip(300), height = dip(350))
+            }.lparams(width = dip(200), height = dip(150))
 
             dashboardView {
                 startAngle = 150F
                 graduateCount = 11
-                padding = dip(20)
-            }.lparams(width = dip(300), height = dip(350))
+                padding = dip(10)
+                background = ColorDrawable(Color.BLACK)
+            }.lparams(width = dip(200), height = dip(150))
 
             pieView {
-                padding = dip(20)
+                padding = dip(10)
                 pieDatas = mutableMapOf(0.3F to Color.RED, 0.2F to Color.BLUE, 0.4F to Color.GREEN, 0.1F to Color.CYAN)
                 hasClickAnimator = true
                 isCirclePie = true
-            }.lparams(width = dip(300), height = dip(350))
+            }.lparams(width = dip(200), height = dip(150))
 
             circleImageView {
                 imageResource = R.mipmap.circle
-                padding = dip(20)
+                padding = dip(10)
                 circleDrawable = CircleImageLayerDrawable()
-            }.lparams(width = dip(300), height = dip(350))
+            }.lparams(width = dip(200), height = dip(150))
         }
     }
 }

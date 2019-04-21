@@ -86,7 +86,7 @@ class DashboardView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         val sinY = Math.sin(Math.toRadians(startAngle.toDouble()))
         var radius = (validH / ( 1 + sinY)).toFloat()
         val radiusX = (measuredWidth.toFloat() - paddingLeft - paddingRight) / 2
-        var centerY = 0F
+        var centerY = radius + paddingTop
         if (radius > radiusX) {
             radius = radiusX
             val blankSpace = (validH - radius - radius * sinY) / 2
