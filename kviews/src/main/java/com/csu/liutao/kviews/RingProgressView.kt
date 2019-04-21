@@ -52,7 +52,7 @@ class RingProgressView(context: Context, attrs: AttributeSet? = null, defStyleAt
 
 }
 
-fun View.computeCircleRectF () : RectF {
+internal fun View.computeCircleRectF () : RectF {
     val cenX = (paddingLeft.toFloat() + right - paddingRight) / 2
     val cenY = (paddingTop.toFloat() + bottom - paddingBottom) / 2
     val w = (right.toFloat() -paddingRight - paddingLeft) / 2
