@@ -47,7 +47,7 @@ class RingProgressView(context: Context, attrs: AttributeSet? = null, defStyleAt
         paint.color = textColor
         val rect = Rect()
         paint.getTextBounds(text, 0, text.length, rect)
-        canvas?.drawText(text, rectF.centerX() - rect.width() / 2, rectF.centerY(), paint)
+        canvas?.drawText(text, rectF.centerX() - rect.width() / 2, rectF.centerY() + (paint.fontMetrics.descent - paint.fontMetrics.ascent) / 2, paint)
     }
 
 }
