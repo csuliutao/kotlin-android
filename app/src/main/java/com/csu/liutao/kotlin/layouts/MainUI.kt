@@ -6,9 +6,8 @@ import android.view.View
 import android.widget.LinearLayout
 import com.csu.liutao.cotlin.R
 import com.csu.liutao.kviews.circleImageView
+import com.csu.liutao.kviews.ringProgressView
 import com.csu.liutao.kviews.dashboardView
-import com.csu.liutao.kviews.drawables.CircleDrawable
-import com.csu.liutao.kviews.drawables.CircleImageClipDrawable
 import com.csu.liutao.kviews.drawables.CircleImageLayerDrawable
 import com.csu.liutao.kviews.pieView
 import org.jetbrains.anko.*
@@ -17,6 +16,11 @@ class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
         verticalLayout {
             orientation = LinearLayout.VERTICAL
+            ringProgressView {
+                padding = dip(20)
+                progress = 90
+            }.lparams(width = dip(300), height = dip(350))
+
             dashboardView {
                 startAngle = 150F
                 graduateCount = 11
