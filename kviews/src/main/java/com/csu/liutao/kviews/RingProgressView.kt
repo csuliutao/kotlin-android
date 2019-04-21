@@ -45,18 +45,19 @@ class RingProgressView(context: Context, attrs: AttributeSet? = null, defStyleAt
         paint.strokeWidth = textStrokeWidth.toFloat()
         paint.textSize = textSize.toFloat()
         paint.color = textColor
-        val rect = Rect()
+        /*val rect = Rect()
         paint.getTextBounds(text, 0, text.length, rect)
-        canvas?.drawText(text, rectF.centerX() - rect.width() / 2, rectF.centerY() + (paint.fontMetrics.descent - paint.fontMetrics.ascent) / 2, paint)
+        canvas?.drawText(text, rectF.centerX() - rect.width() / 2, rectF.centerY() + (paint.fontMetrics.descent - paint.fontMetrics.ascent) / 2, paint)*/
+        canvas?.drawText(text, rectF.centerX() - paint.measureText(text) / 2, rectF.centerY() + (paint.fontMetrics.descent - paint.fontMetrics.ascent) / 2, paint)
     }
 
 }
 
 internal fun View.computeCircleRectF () : RectF {
-    val cenX = (paddingLeft.toFloat() + right - paddingRight) / 2
-    val cenY = (paddingTop.toFloat() + bottom - paddingBottom) / 2
-    val w = (right.toFloat() -paddingRight - paddingLeft) / 2
-    val h = (bottom.toFloat() - paddingBottom - paddingTop) / 2
+    val cenX = (paddingLeft.toFloat() + measuredWidth - paddingRight) / 2
+    val cenY = (paddingTop.toFloat() + measuredHeight - paddingBottom) / 2
+    val w = (measuredWidth.toFloat() -paddingRight - paddingLeft) / 2
+    val h = (measuredHeight.toFloat() - paddingBottom - paddingTop) / 2
     val radius = min(w,h)
     val rectF = RectF(cenX - radius, cenY - radius, cenX + radius, cenY + radius)
     return rectF

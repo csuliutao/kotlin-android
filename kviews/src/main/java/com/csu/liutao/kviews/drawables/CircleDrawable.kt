@@ -18,7 +18,6 @@ sealed class CircleDrawable{
             }
         }
     var drawable : Drawable? = null
-        set(value) { field = value}
 
     abstract fun draw(canvas: Canvas)
 }

@@ -6,17 +6,20 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.LinearLayout
 import com.csu.liutao.cotlin.R
-import com.csu.liutao.kviews.circleImageView
-import com.csu.liutao.kviews.ringProgressView
-import com.csu.liutao.kviews.dashboardView
+import com.csu.liutao.kviews.*
 import com.csu.liutao.kviews.drawables.CircleImageLayerDrawable
-import com.csu.liutao.kviews.pieView
 import org.jetbrains.anko.*
 
 class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
         verticalLayout {
             orientation = LinearLayout.VERTICAL
+            articleWithPicView {
+                padding = dip(20)
+                picRatio = 0.5F
+                picPosition = PicPosition.CENTER
+            }.lparams(width = dip(400), height = dip(200))
+
             ringProgressView {
                 padding = dip(20)
                 progress = 90
@@ -26,7 +29,6 @@ class MainUI : AnkoComponent<Activity> {
                 startAngle = 150F
                 graduateCount = 11
                 padding = dip(10)
-                background = ColorDrawable(Color.BLACK)
             }.lparams(width = dip(200), height = dip(150))
 
             pieView {
