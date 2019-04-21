@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewManager
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
+import kotlin.math.min
 
 class DashboardView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
     private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -37,13 +38,18 @@ class DashboardView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
             paint.color = value
         }
 
-    init {
-        paint.style = Paint.Style.STROKE
-        paint.color = color
-    }
+    var pointDistance = dip(20).toFloat()
+
+    var pointIndex = 3
+        set(value) {
+            if (value >= graduateCount) throw Error("index can not > graduateCount")
+            field = value
+        }
 
     override fun onDraw(canvas: Canvas?) {
         computeRadius()
+        paint.style = Paint.Style.STROKE
+        paint.color = color
         paint.strokeWidth = strokeWidth
         paint.pathEffect = null
         canvas!!.drawArc(rectF, startAngle, sweepAngle, false, paint)
@@ -58,6 +64,20 @@ class DashboardView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         paint.pathEffect = DashPathEffect(floatArrayOf(strokeWidth, eachSpace - strokeWidth), 0F)
         paint.strokeWidth = graduateLength
         canvas!!.drawPath(path, paint)
+
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.pathEffect = null
+        paint.strokeWidth = strokeWidth * 2
+        paint.style = Paint.Style.FILL_AND_STROKE
+        canvas!!.drawPoint(rectF.centerX(), rectF.centerY(), paint)
+
+        paint.strokeWidth = strokeWidth
+        paint.style = Paint.Style.STROKE
+        val length = tempRectF.width() / 2 - pointDistance
+        val radians = Math.toRadians(startAngle + sweepAngle.toDouble() / (graduateCount - 1) * pointIndex)
+        val y = length * Math.sin(radians).toFloat()
+        val x = length * Math.cos(radians).toFloat()
+        canvas!!.drawLine(rectF.centerX(), rectF.centerY(), rectF.centerX() + x, rectF.centerY() + y, paint)
     }
 
     private fun computeRadius() {
