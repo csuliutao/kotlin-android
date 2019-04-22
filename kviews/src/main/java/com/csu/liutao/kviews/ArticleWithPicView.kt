@@ -36,43 +36,15 @@ class ArticleWithPicView(context: Context, attrs: AttributeSet? = null, defStyle
     private val paint = TextPaint(Paint.ANTI_ALIAS_FLAG)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(computeWidth(widthMeasureSpec), computeHeight(heightMeasureSpec))
+        val h = paddingTop + paddingBottom + (drawable.bounds.height() / picRatio).toInt()
+        val w = (drawable.bounds.width() / picRatio).toInt() + paddingLeft + paddingRight
+
+        setMeasuredDimension(resolveSize(w, widthMeasureSpec), resolveSize(h, heightMeasureSpec))
+        picHeight = (measuredHeight - paddingBottom - paddingTop) * picRatio
+        picWidth = (measuredWidth - paddingLeft - paddingRight) * picRatio
+
         paint.color = textColor
         paint.textSize = textSize
-    }
-
-    private fun computeHeight(heightMeasureSpec: Int): Int {
-        val mode = MeasureSpec.getMode(heightMeasureSpec)
-        val h = MeasureSpec.getSize(heightMeasureSpec)
-        when (mode) {
-            MeasureSpec.UNSPECIFIED, MeasureSpec.EXACTLY -> {
-                picHeight = (h - paddingBottom - paddingTop) * picRatio
-                return h
-            }
-            else -> {
-                val tempH = paddingTop + paddingBottom + (drawable.bounds.height() / picRatio).toInt()
-                val result = min(h, tempH)
-                picHeight = (result - paddingBottom - paddingTop) * picRatio
-                return result
-            }
-        }
-    }
-
-    private fun computeWidth(widthMeasureSpec: Int): Int {
-        val mode = MeasureSpec.getMode(widthMeasureSpec)
-        val w = MeasureSpec.getSize(widthMeasureSpec)
-        when (mode) {
-            MeasureSpec.UNSPECIFIED, MeasureSpec.EXACTLY -> {
-                picWidth = (w - paddingLeft - paddingRight) * picRatio
-                return w
-            }
-            else -> {
-                val tempW = (drawable.bounds.width() / picRatio).toInt() + paddingLeft + paddingRight
-                val result = max(w, tempW)
-                picWidth = (w - paddingLeft - paddingRight) * picRatio
-                return result
-            }
-        }
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -92,7 +64,7 @@ class ArticleWithPicView(context: Context, attrs: AttributeSet? = null, defStyle
         canvas!!.drawBitmap(bitmap, matrix, null)
         canvas.restore()
 
-        val textH = paint.getFontMetrics().descent - paint.getFontMetrics().ascent
+        val textH = paint.fontSpacing
         var startY = paddingTop.toFloat()
         val maxH = measuredHeight.toFloat() - paddingBottom
         var tempText = text

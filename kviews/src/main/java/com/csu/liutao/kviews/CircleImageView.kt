@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewManager
 import android.widget.ImageView
 import com.csu.liutao.kviews.drawables.CircleDrawable
@@ -16,29 +17,11 @@ class CircleImageView(context: Context, attrs: AttributeSet? = null, defStyleAtt
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         if (drawable != null) {
-            setMeasuredDimension(computeWidth(widthMeasureSpec), computeHeight(heightMeasureSpec))
+            val w = drawable.intrinsicWidth + paddingLeft + paddingRight
+            val h = drawable.intrinsicHeight + paddingBottom + paddingTop
+            setMeasuredDimension(resolveSize(w, widthMeasureSpec), resolveSize(h, heightMeasureSpec))
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        }
-    }
-
-    private fun computeHeight(heightMeasureSpec: Int): Int {
-        val h = MeasureSpec.getSize(heightMeasureSpec)
-        val m = MeasureSpec.getMode(heightMeasureSpec)
-        when (m) {
-            MeasureSpec.UNSPECIFIED, MeasureSpec.EXACTLY -> return h
-            MeasureSpec.AT_MOST -> return Math.min(h, drawable.intrinsicHeight + paddingBottom + paddingTop)
-            else -> return 0
-        }
-    }
-
-    private fun computeWidth(widthMeasureSpec: Int): Int {
-        val w = MeasureSpec.getSize(widthMeasureSpec)
-        val m = MeasureSpec.getMode(widthMeasureSpec)
-        when (m) {
-            MeasureSpec.UNSPECIFIED, MeasureSpec.EXACTLY -> return w
-            MeasureSpec.AT_MOST -> return Math.min(w, drawable.intrinsicWidth + paddingLeft + paddingRight)
-            else -> return 0
         }
     }
 
