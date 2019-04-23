@@ -2,6 +2,7 @@ package com.csu.liutao.kviews.drawables
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import com.csu.liutao.kviews.toBitmap
 import kotlin.math.min
 
 sealed class CircleDrawable{
@@ -33,9 +34,7 @@ class CircleImageClipDrawable: CircleDrawable() {
         val temPaint = Paint()
         temPaint.isAntiAlias = true
         // 图片需显示部分左上角移动到裁剪区域左上角，不缩放图片
-        val srcBmp = Bitmap.createBitmap(drawable!!.intrinsicWidth, drawable!!.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val srcCanvas = Canvas(srcBmp)
-        drawable!!.draw(srcCanvas)
+        val srcBmp = toBitmap(drawable!!)
 
         val tempMatrix = Matrix()
         tempMatrix.postTranslate(centerX - srcBmp.width / 2, centerY - srcBmp.height / 2)
