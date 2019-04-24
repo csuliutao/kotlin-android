@@ -17,6 +17,65 @@ class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
         verticalLayout {
             orientation = LinearLayout.VERTICAL
+
+            tagLayout {
+                background = ColorDrawable(Color.BLACK)
+                textView {
+                    text = "hellfgdfgggggggggggggggggo"
+                    textSize = dip(14).toFloat()
+                    background = ColorDrawable(Color.BLUE)
+                    padding = dip(20)
+                }.lparams(wrapContent, wrapContent) {
+                    margin = dip(20)
+                }
+                textView {
+                    text = "aaaaa"
+                    textSize = dip(14).toFloat()
+                    padding = dip(20)
+                    background = ColorDrawable(Color.RED)
+                }.lparams(500, wrapContent)
+                textView {
+                    text = "bbbbbbbbb"
+                    textSize = dip(14).toFloat()
+                    background = ColorDrawable(Color.YELLOW)
+                }.lparams(wrapContent, wrapContent){
+                    margin = dip(20)
+                }
+                textView {
+                    text = "ccccc"
+                    textSize = dip(14).toFloat()
+                    background = ColorDrawable(Color.CYAN)
+                }.lparams(wrapContent, wrapContent){
+                    margin = dip(20)
+                }
+                textView {
+                    text = "dddddddddd"
+                    textSize = dip(14).toFloat()
+                    background = ColorDrawable(Color.GREEN)
+                }.lparams(wrapContent, wrapContent){
+                    margin = dip(20)
+                }
+                textView {
+                    text = "rrr"
+                    textSize = dip(14).toFloat()
+                    background = ColorDrawable(Color.DKGRAY)
+                }.lparams(wrapContent, wrapContent){
+                    margin = dip(20)
+                }
+                textView {
+                    text = "eee"
+                    textSize = dip(14).toFloat()
+                    background = ColorDrawable(Color.DKGRAY)
+                }.lparams(wrapContent, wrapContent){
+                    margin = dip(20)
+                }
+                padding = dip(10)
+            }.lparams(matchParent, wrapContent) {
+                margin = dip(10)
+            }
+
+
+
             cameraFoldView {
                 padding = dip(20)
                 rotateX = 70F
