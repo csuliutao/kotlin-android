@@ -37,7 +37,7 @@ class TagLayout(context : Context, attrs : AttributeSet? = null, defStyle : Int 
             val child = getChildAt(i)
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0)
             val childMargin = child.layoutParams as MarginLayoutParams
-            if ((wMode != MeasureSpec.UNSPECIFIED) && (widthLineUsed + child.measuredWidth + childMargin.leftMargin + childMargin.rightMargin) > w && widthLineUsed != paddingLeft) {
+            if ((wMode != MeasureSpec.UNSPECIFIED) && (widthLineUsed + child.measuredWidth + childMargin.leftMargin + childMargin.rightMargin) > w) {
                 heightUsed += heightLineUsed
                 widthLineUsed = paddingLeft
                 widthUsed = max(widthLineUsed, widthUsed)

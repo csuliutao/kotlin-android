@@ -21,7 +21,7 @@ class MainUI : AnkoComponent<Activity> {
             tagLayout {
                 background = ColorDrawable(Color.BLACK)
                 textView {
-                    text = "hellfgdfgggggggggggggggggo"
+                    text = "hellfgdfggggggggggggggggfgasdgsdfgasdfgd bbbbbbbbbbgo"
                     textSize = dip(14).toFloat()
                     background = ColorDrawable(Color.BLUE)
                     padding = dip(20)
