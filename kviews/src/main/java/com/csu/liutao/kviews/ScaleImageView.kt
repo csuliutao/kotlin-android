@@ -56,16 +56,18 @@ class ScaleImageView(context: Context, attrs:AttributeSet? = null, defStyle : In
         override fun onDown(e: MotionEvent?): Boolean = true
 
         override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-            val w = bitmap.width - measuredWidth
-            val leftSpace = centerX - bitmap.width / scaleRadio / 2F
-            val l = ((clickX - leftSpace) * scaleRadio - clickX).toInt()
+            if (isScale) {
+                val w = bitmap.width - measuredWidth
+                val leftSpace = centerX - bitmap.width / scaleRadio / 2F
+                val l = ((clickX - leftSpace) * scaleRadio - clickX).toInt()
 
-            val h = bitmap.height - measuredHeight
-            val topSpace = centerY - bitmap.height / scaleRadio / 2F
-            val t = ((clickY - topSpace) * scaleRadio - clickY).toInt()
+                val h = bitmap.height - measuredHeight
+                val topSpace = centerY - bitmap.height / scaleRadio / 2F
+                val t = ((clickY - topSpace) * scaleRadio - clickY).toInt()
 
-            scroller.fling(moveX.toInt(), moveY.toInt(), velocityX.toInt(), velocityY.toInt(), l - w, l, t - h, t, 100, 100)
-            doScroller()
+                scroller.fling(moveX.toInt(), moveY.toInt(), velocityX.toInt(), velocityY.toInt(), l - w, l, t - h, t, w, h)
+                doScroller()
+            }
             return true
         }
 
@@ -87,10 +89,12 @@ class ScaleImageView(context: Context, attrs:AttributeSet? = null, defStyle : In
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-            moveX -= distanceX
-            moveY -= distanceY
-            modifyMove()
-            postInvalidate()
+            if (isScale) {
+                moveX -= distanceX
+                moveY -= distanceY
+                modifyMove()
+                postInvalidate()
+            }
             return true
         }
     })
