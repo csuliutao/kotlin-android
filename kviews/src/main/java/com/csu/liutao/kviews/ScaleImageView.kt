@@ -98,7 +98,7 @@ class ScaleImageView(context: Context, attrs:AttributeSet? = null, defStyle : In
     private fun doScroller() {
         ViewCompat.postOnAnimation(this, object : Runnable {
             override fun run() {
-                while (scroller.computeScrollOffset()){
+                if (scroller.computeScrollOffset()){
                     moveX = scroller.currX.toFloat()
                     moveY = scroller.currY.toFloat()
                     postInvalidate()
