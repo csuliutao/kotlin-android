@@ -18,6 +18,10 @@ class MainUI : AnkoComponent<Activity> {
         verticalLayout {
             orientation = LinearLayout.VERTICAL
 
+            scaleImageView {
+                padding = dip(30)
+            }.lparams(matchParent, wrapContent)
+
             tagLayout {
                 background = ColorDrawable(Color.BLACK)
                 textView {
@@ -25,9 +29,7 @@ class MainUI : AnkoComponent<Activity> {
                     textSize = dip(14).toFloat()
                     background = ColorDrawable(Color.BLUE)
                     padding = dip(20)
-                }.lparams(wrapContent, wrapContent) {
-                    margin = dip(20)
-                }
+                }.lparams(wrapContent, wrapContent)
                 textView {
                     text = "aaaaa"
                     textSize = dip(14).toFloat()
@@ -70,9 +72,7 @@ class MainUI : AnkoComponent<Activity> {
                     margin = dip(20)
                 }
                 padding = dip(10)
-            }.lparams(matchParent, wrapContent) {
-                margin = dip(10)
-            }
+            }.lparams(matchParent, wrapContent)
 
 
 
@@ -87,7 +87,7 @@ class MainUI : AnkoComponent<Activity> {
                     animator.duration = 2000
                     animator.start()
                 }
-            }.lparams(matchParent, wrapContent)
+            }.lparams(matchParent, dip(100))
 
             articleWithPicView {
                 padding = dip(20)
