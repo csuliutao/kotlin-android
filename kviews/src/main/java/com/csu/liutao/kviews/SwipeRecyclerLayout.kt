@@ -2,7 +2,6 @@ package com.csu.liutao.kviews
 
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Canvas
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -47,6 +46,8 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
     var listener : OnSwipeListener? = null
 
     val animator = ObjectAnimator.ofInt(this,"curHeight",0)
+    val headerAnimator = ObjectAnimator.ofInt(this,"curHeight",headerH)
+    val footerAnimator = ObjectAnimator.ofInt(this,"curHeight",footerH)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -127,8 +128,14 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
             MotionEvent.ACTION_UP -> {
                 canScroll = false
                 when (curState) {
-                    HEADER -> listener?.onRefresh()
-                    FOTTER -> listener?.onLoadMore()
+                    HEADER -> {
+                        if (curHeight != headerH) startAnimate(headerAnimator, 200)
+                        listener?.onRefresh()
+                    }
+                    FOTTER -> {
+                        if (curHeight != footerH) startAnimate(footerAnimator, 200)
+                        listener?.onLoadMore()
+                    }
                 }
             }
 
@@ -136,9 +143,13 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
     }
 
     fun stopRefresh() {
-        animator.interpolator = LinearInterpolator()
-        animator.duration = 500
-        animator.start()
+        startAnimate(animator)
+    }
+
+    private fun startAnimate(anim : ObjectAnimator, duration : Long = 500L) {
+        anim.interpolator = LinearInterpolator()
+        anim.duration = duration
+        anim.start()
     }
 
     private fun isLastItemShow(y: Float): Boolean {
