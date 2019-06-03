@@ -22,8 +22,6 @@ class MainUI : AnkoComponent<Activity> {
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
             leftPadding = dip(16)
             rightPadding = dip (16)
-            headerId = R.layout.support_simple_spinner_dropdown_item
-            fotterId = R.layout.support_simple_spinner_dropdown_item
 
             recycleView {
                 id = RECYCLE_VIEW

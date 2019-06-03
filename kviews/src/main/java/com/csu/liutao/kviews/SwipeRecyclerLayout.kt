@@ -3,18 +3,13 @@ package com.csu.liutao.kviews
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.*
 import android.view.animation.LinearInterpolator
-import android.widget.TextView
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.sp
-import org.jetbrains.anko.textColor
 import java.lang.Exception
 import kotlin.math.abs
 
@@ -28,8 +23,8 @@ inline fun ViewManager.recycleView(theme : Int = 0, init : RecyclerView.() -> Un
 
 class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defStyle : Int = 0) : ViewGroup(context, attrs, defStyle){
     var headerView : View? = null
-    var headerId : Int = -1
-    var fotterId = -1
+    var headerId : Int = R.layout.test_text_view
+    var fotterId = R.layout.test_text_view
     var fotterView : View? = null
     private var curState = NORMAL
     private var curHeight = 0
@@ -57,29 +52,9 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
         recyclerView = getChildAt(0) as RecyclerView
         if (headerView == null) {
             headerView = LayoutInflater.from(context).inflate(headerId, null)
-            headerView!!.layoutParams = LayoutParams(matchParent, dip(32))
-            if (headerView is TextView) {
-                (headerView as TextView).text = "header"
-                (headerView as TextView).textSize = sp(6).toFloat()
-                (headerView as TextView).setTextColor(Color.RED)
-            }
-            headerView!!.left = left + paddingLeft
-            headerView!!.right = right - paddingRight
-            headerView!!.top = 0
-            headerView!!.bottom = headerView!!.height
         }
         if (fotterView == null) {
             fotterView = LayoutInflater.from(context).inflate(fotterId, null)
-            fotterView!!.layoutParams = LayoutParams(matchParent, dip(32))
-            if (fotterView is TextView) {
-                (fotterView as TextView).text = "footer"
-                (fotterView as TextView).textSize = sp(6).toFloat()
-                (fotterView as TextView).setTextColor(Color.RED)
-            }
-            fotterView!!.left = left + paddingLeft
-            fotterView!!.right = right - paddingRight
-            fotterView!!.top = bottom - fotterView!!.height
-            fotterView!!.bottom = bottom
         }
     }
 
@@ -122,7 +97,6 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
     }
 
     private fun handleTouchEvent(ev: MotionEvent?) {
-        checkChildView()
         when (ev!!.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 downY = ev!!.y
