@@ -6,6 +6,7 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.view.View.OVER_SCROLL_NEVER
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.csu.liutao.cotlin.R

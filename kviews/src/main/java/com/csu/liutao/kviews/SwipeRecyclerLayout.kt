@@ -11,7 +11,7 @@ import android.view.animation.LinearInterpolator
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
 import java.lang.Exception
-import kotlin.math.abs
+import java.lang.Math.abs
 
 inline fun ViewManager.swipeRecyclerLayout(theme : Int = 0, init : SwipeRecyclerLayout.() -> Unit) : SwipeRecyclerLayout {
     return ankoView({SwipeRecyclerLayout(it)}, theme, init)
@@ -24,8 +24,8 @@ inline fun ViewManager.recycleView(theme : Int = 0, init : RecyclerView.() -> Un
 class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defStyle : Int = 0) : ViewGroup(context, attrs, defStyle){
     var headerView : View? = null
     var headerId : Int = R.layout.test_text_view
-    var fotterId = R.layout.test_text_view
-    var fotterView : View? = null
+    var footerId = R.layout.test_text_view
+    var footerView : View? = null
     private var curState = NORMAL
     private var curHeight = 0
         set(value) {
@@ -35,6 +35,8 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
         }
         get() = field
     private var headerH = dip(32)
+
+    private var footerH = dip(32)
 
     private var downY = 0F
 
@@ -50,11 +52,14 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
         super.onAttachedToWindow()
         checkChildView()
         recyclerView = getChildAt(0) as RecyclerView
+        recyclerView!!.overScrollMode = View.OVER_SCROLL_NEVER
         if (headerView == null) {
             headerView = LayoutInflater.from(context).inflate(headerId, null)
+            addView(headerView)
         }
-        if (fotterView == null) {
-            fotterView = LayoutInflater.from(context).inflate(fotterId, null)
+        if (footerView == null) {
+            footerView = LayoutInflater.from(context).inflate(footerId, null)
+            addView(footerView)
         }
     }
 
@@ -65,30 +70,22 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
         }
     }
 
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        when (curState) {
-            INVALID -> throw Exception("not only child recyclerView")
-            HEADER -> {
-                recyclerView?.layout(l + paddingLeft, t + curHeight, r - paddingRight, b)
-            }
-            FOTTER -> {
-                recyclerView?.layout(l + paddingLeft, t, r - paddingRight, b - curHeight)
-            }
-            else -> recyclerView?.layout(l + paddingLeft, t, r - paddingRight, b)
-        }
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val h = MeasureSpec.getSize(heightMeasureSpec)
+        val newSpec = MeasureSpec.makeMeasureSpec(h, MeasureSpec.AT_MOST)
+        headerView?.measure(widthMeasureSpec, newSpec)
+        headerH = headerView!!.measuredHeight
+        footerView?.measure(widthMeasureSpec, newSpec)
+        footerH = footerView!!.measuredHeight
+        recyclerView?.measure(widthMeasureSpec, heightMeasureSpec)
+        return setMeasuredDimension(recyclerView!!.measuredWidth, recyclerView!!.measuredHeight)
     }
 
-    override fun dispatchDraw(canvas: Canvas?) {
-        when (curState) {
-            INVALID -> throw Exception("not only child recyclerView")
-            HEADER -> {
-                headerView!!.draw(canvas)
-            }
-            FOTTER -> {
-                fotterView!!.draw(canvas)
-            }
-        }
-        super.dispatchDraw(canvas)
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        val distance = if (curState == HEADER) curHeight else -curHeight
+        headerView?.layout(l, t - headerH + distance, r, t  + distance)
+        footerView?.layout(l, b + distance, r, b + footerH  + distance)
+        recyclerView?.layout(l, t + distance, r, b  + distance)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -102,6 +99,8 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
                 downY = ev!!.y
                 if (curState == NORMAL) {
                     canScroll = true
+                } else {
+                    curHeight = 0
                 }
             }
             MotionEvent.ACTION_MOVE -> {
@@ -116,7 +115,11 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
                         }
                     } else {
                         curHeight = abs(ev!!.y - downY).toInt()
-                        if (curHeight > headerH) curHeight = headerH
+                        when (curState) {
+                            HEADER -> if (curHeight > headerH) curHeight = headerH
+                            FOTTER -> if (curHeight > footerH) curHeight = footerH
+                        }
+
                     }
                 }
             }

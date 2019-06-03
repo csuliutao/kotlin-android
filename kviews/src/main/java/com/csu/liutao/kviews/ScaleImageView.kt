@@ -177,6 +177,7 @@ class ScaleImageView(context: Context, attrs:AttributeSet? = null, defStyle : In
     }
 
     override fun onDraw(canvas: Canvas?) {
+        draw(canvas)
         val tempM = Matrix(setMatrix)
         val tempS = 1 + (scaleRadio - 1) * scaleFraction
         tempM.postScale(tempS, tempS, clickX, clickY)
