@@ -18,31 +18,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainUI().setContentView(this)
-        val swipeLayout = findViewById<SwipeRecyclerLayout>(RECYCLE_LAYOUT)
-        val recyclerView = findViewById<RecyclerView>(RECYCLE_VIEW)
-        recyclerView.adapter = TestAdapter(this)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        swipeLayout.listener = object : SwipeRecyclerLayout.OnSwipeListener {
-            override fun onRefresh() {
-                toast("on refresh")
-                swipeLayout.postDelayed({
-                    swipeLayout.stopRefresh()
-                }, 2000)
-            }
-
-            override fun onLoadMore() {
-                toast("load more")
-                swipeLayout.postDelayed({
-                    swipeLayout.stopRefresh()
-                }, 2000)
-            }
-        }
-
-
-        /*window.decorView.post(Runnable {
-            val floatCircle = FloatCircleWindow(this, dip(80))
-            floatCircle.show()
-        })*/
     }
 }

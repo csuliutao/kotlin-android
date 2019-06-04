@@ -18,15 +18,8 @@ const val RECYCLE_LAYOUT = 6;
 const val RECYCLE_VIEW = 7
 class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
-        swipeRecyclerLayout {
-            id = RECYCLE_LAYOUT
-            layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
-            padding = dip(16)
-
-            recycleView {
-                id = RECYCLE_VIEW
-                layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
-            }
+        chartView {
+            layoutParams = ViewGroup.LayoutParams(matchParent, dip(200))
         }
     }
 }
