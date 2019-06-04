@@ -11,20 +11,22 @@ import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
 import java.lang.Exception
 import java.lang.Math.abs
+import java.lang.Math.min
 
-inline fun ViewManager.swipeRecyclerLayout(theme : Int = 0, init : SwipeRecyclerLayout.() -> Unit) : SwipeRecyclerLayout {
-    return ankoView({SwipeRecyclerLayout(it)}, theme, init)
+inline fun ViewManager.swipeRecyclerLayout(theme: Int = 0, init: SwipeRecyclerLayout.() -> Unit): SwipeRecyclerLayout {
+    return ankoView({ SwipeRecyclerLayout(it) }, theme, init)
 }
 
-inline fun ViewManager.recycleView(theme : Int = 0, init : RecyclerView.() -> Unit) : RecyclerView {
-    return ankoView({RecyclerView(it)}, theme, init)
+inline fun ViewManager.recycleView(theme: Int = 0, init: RecyclerView.() -> Unit): RecyclerView {
+    return ankoView({ RecyclerView(it) }, theme, init)
 }
 
-class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defStyle : Int = 0) : ViewGroup(context, attrs, defStyle){
-    var headerView : View? = null
-    var headerId : Int = R.layout.test_text_view
+class SwipeRecyclerLayout(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
+    ViewGroup(context, attrs, defStyle) {
+    var headerView: View? = null
+    var headerId: Int = R.layout.test_text_view
     var footerId = R.layout.test_text_view
-    var footerView : View? = null
+    var footerView: View? = null
     private var curState = NORMAL
     private var curHeight = 0
         set(value) {
@@ -39,15 +41,15 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
 
     private var downY = 0F
 
-    private var canScroll = true;
+    var canScroll = true;
 
-    private var recyclerView : RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
 
-    var listener : OnSwipeListener? = null
+    var listener: OnSwipeListener? = null
 
-    val animator = ObjectAnimator.ofInt(this,"curHeight",0)
-    val headerAnimator = ObjectAnimator.ofInt(this,"curHeight",headerH)
-    val footerAnimator = ObjectAnimator.ofInt(this,"curHeight",footerH)
+    val animator = ObjectAnimator.ofInt(this, "curHeight", 0)
+    val headerAnimator = ObjectAnimator.ofInt(this, "curHeight", headerH)
+    val footerAnimator = ObjectAnimator.ofInt(this, "curHeight", footerH)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -72,21 +74,38 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val h = MeasureSpec.getSize(heightMeasureSpec)
-        val newSpec = MeasureSpec.makeMeasureSpec(h, MeasureSpec.AT_MOST)
-        headerView?.measure(widthMeasureSpec, newSpec)
+        val w = MeasureSpec.getSize(widthMeasureSpec) - paddingRight - paddingLeft
+        val wM = MeasureSpec.getMode(widthMeasureSpec)
+        val newWSpec = MeasureSpec.makeMeasureSpec(w, wM)
+
+        val h = MeasureSpec.getSize(heightMeasureSpec) - paddingTop - paddingBottom
+        headerView?.measure(newWSpec, MeasureSpec.makeMeasureSpec(h, MeasureSpec.AT_MOST))
         headerH = headerView!!.measuredHeight
-        footerView?.measure(widthMeasureSpec, newSpec)
+        footerView?.measure(newWSpec, MeasureSpec.makeMeasureSpec(h, MeasureSpec.AT_MOST))
         footerH = footerView!!.measuredHeight
-        recyclerView?.measure(widthMeasureSpec, heightMeasureSpec)
-        return setMeasuredDimension(recyclerView!!.measuredWidth, recyclerView!!.measuredHeight)
+
+        recyclerView?.measure(newWSpec, MeasureSpec.makeMeasureSpec(h, MeasureSpec.getMode(heightMeasureSpec)))
+        return setMeasuredDimension(
+            recyclerView!!.measuredWidth + paddingLeft + paddingRight,
+            recyclerView!!.measuredHeight + paddingBottom + paddingBottom
+        )
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         val distance = if (curState == HEADER) curHeight else -curHeight
-        headerView?.layout(l, t - headerH + distance, r, t  + distance)
-        footerView?.layout(l, b + distance, r, b + footerH  + distance)
-        recyclerView?.layout(l, t + distance, r, b  + distance)
+        headerView?.layout(
+            l + paddingLeft,
+            t - headerH + distance + paddingTop,
+            r - paddingRight,
+            t + distance + paddingTop
+        )
+        footerView?.layout(
+            l + paddingLeft,
+            b + distance - paddingBottom,
+            r - paddingRight,
+            b + footerH + distance - paddingBottom
+        )
+        recyclerView?.layout(l + paddingLeft, t + distance + paddingTop, r - paddingRight, b + distance - paddingBottom)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -146,7 +165,7 @@ class SwipeRecyclerLayout(context : Context, attrs : AttributeSet? = null, defSt
         startAnimate(animator)
     }
 
-    private fun startAnimate(anim : ObjectAnimator, duration : Long = 500L) {
+    private fun startAnimate(anim: ObjectAnimator, duration: Long = 500L) {
         anim.interpolator = LinearInterpolator()
         anim.duration = duration
         anim.start()

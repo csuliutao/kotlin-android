@@ -21,8 +21,7 @@ class MainUI : AnkoComponent<Activity> {
         swipeRecyclerLayout {
             id = RECYCLE_LAYOUT
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
-            leftPadding = dip(16)
-            rightPadding = dip (16)
+            padding = dip(16)
 
             recycleView {
                 id = RECYCLE_VIEW
