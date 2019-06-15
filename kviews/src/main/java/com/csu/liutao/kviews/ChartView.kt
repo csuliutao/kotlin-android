@@ -1,12 +1,10 @@
 package com.csu.liutao.kviews
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.RectF
+import android.graphics.*
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -63,7 +61,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     var yAxisDrawable : AxisDrawable<Float, Int> = YAxisDrawable()
 
     var xUnitDrawable : StringDrawable = XStringDrawable(xUnit)
-    var yUnitDrawable : StringDrawable = YStringDrawable(yUnit)
+    var yUnitDrawable : StringDrawable = XStringDrawable(yUnit)
     var titleDrawable : StringDrawable = XStringDrawable(title)
 
     private var xAxisRect = RectF()
@@ -84,7 +82,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         yUnitDrawable.paint.textSize = context.sp(10).toFloat()
         valueDrawable.paint.textSize = context.sp(10).toFloat()
         xAxisDrawable.paint.textSize = context.sp(10).toFloat()
-        xAxisDrawable.paint.textSize = context.sp(10).toFloat()
+        yAxisDrawable.paint.textSize = context.sp(10).toFloat()
     }
 
     private val gestureDetector = GestureDetector(object : GestureDetector.SimpleOnGestureListener() {
@@ -94,6 +92,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
             val dis = e2!!.x - e1!!.x
+            Log.e("liutao-dis", "dis = {$dis}")
             if (isCanScroll(dis < 0)) {
                 moveDis += dis
                 caculateXList()
@@ -123,8 +122,8 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         yAxisRect.top = xHeight.toFloat()
         yAxisRect.bottom = measuredHeight.toFloat() - xHeight
 
-        yUnitRect.left = 0F
-        yUnitRect.right = yWidth.toFloat()
+        yUnitRect.left = yWidth / 2F
+        yUnitRect.right = yUnitRect.left + yWidth
         yUnitRect.top = 0F
         yUnitRect.bottom = xHeight.toFloat()
 
@@ -136,8 +135,8 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
         xUnitRect.left = measuredWidth.toFloat() - yWidth
         xUnitRect.right = measuredWidth.toFloat()
-        xUnitRect.top = measuredHeight.toFloat() - xHeight
-        xUnitRect.bottom = measuredHeight.toFloat()
+        xUnitRect.bottom = measuredHeight - xHeight / 2F
+        xUnitRect.top = xUnitRect.bottom - xHeight
 
         eachSpace = (measuredWidth - yWidth * 2).toFloat() / xMaxCount
         leftMoveDis = if(xList.size <= xMaxCount) 0F else (xList.size - xMaxCount) * eachSpace
@@ -171,9 +170,9 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
     private fun isCanScroll(isRight : Boolean = false) : Boolean {
         if (isRight) {
-            return moveDis >= 0
+            return moveDis > 0
         } else {
-            return moveDis <= leftMoveDis
+            return moveDis < leftMoveDis
         }
     }
 
@@ -253,25 +252,6 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     }
 
-    class VerticalDrawable(val xAxisDrawable : RectDrawable){
-        fun translateXAxisRectFromY(rect: RectF) : RectF {
-            val centerX = rect.centerX()
-            val centerY = rect.centerY()
-            val width = rect.width() / 2
-            val heigh = rect.height() / 2
-            return RectF(centerX - heigh, centerY - width, centerX + heigh, centerY + width)
-        }
-
-        fun draw(rect: RectF, canvas: Canvas?) {
-            val newRect = translateXAxisRectFromY(rect)
-            canvas!!.save()
-            canvas!!.rotate(-90F, rect.centerX(), rect.centerY())
-            xAxisDrawable.draw(newRect, canvas)
-            canvas!!.rotate(90F, rect.centerX(), rect.centerY())
-            canvas!!.restore()
-        }
-    }
-
     class XStringDrawable(name :String?) : StringDrawable(name){
         override fun draw(rect: RectF, canvas: Canvas?) {
             if (TextUtils.isEmpty(name)) return
@@ -297,16 +277,6 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         }
     }
 
-    class YStringDrawable(name :String?) : StringDrawable(name){
-        var drawable : VerticalDrawable? = null
-        init {
-            drawable = VerticalDrawable(XStringDrawable(name))
-        }
-        override fun draw(rect: RectF, canvas: Canvas?) {
-            drawable!!.draw(rect, canvas)
-        }
-    }
-
     abstract class AxisDrawable<T, U>() : RectDrawable {
         val posList : MutableList<T> = mutableListOf()
         val valueList : MutableList<U> = mutableListOf()
@@ -328,18 +298,18 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
             canvas!!.drawLine(rect.right, rect.top, rect.right, rect.bottom, paint)
             val lineWidth = rect.width() / 4
             var index = 0;
-            var maxIndex = posList.size - 2
+            var maxIndex = posList.size - 1
             val drawable = XStringDrawable(valueList.get(0).toString())
             drawable.paint.textSize = paint.textSize
             val rectF = RectF()
-            rectF.left = rect.left + lineWidth
+            rectF.left = rect.left
             rectF.right = rect.right - lineWidth
-            val eachSpace = posList.get(1) - posList.get(0)
+            val eachSpace = posList.get(0) - posList.get(1)
 
             while (index <= maxIndex) {
                 canvas!!.drawLine(rect.right, posList.get(index), rect.right - lineWidth, posList.get(index), paint)
-                rectF.bottom = posList.get(index) - eachSpace / 4
-                rectF.top = posList.get(index + 1) - eachSpace / 4
+                rectF.bottom = posList.get(index) + eachSpace / 2
+                rectF.top = rectF.bottom - eachSpace
                 drawable.name = valueList.get(index).toString()
                 drawable.draw(rectF, canvas)
                 index++
@@ -349,11 +319,9 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
     class XAxisDrawable() : AxisDrawable<Float, String>() {
         override fun draw(rect: RectF, canvas: Canvas?) {
-            canvas!!.save()
-            canvas.clipRect(rect)
             canvas!!.drawLine(rect.left, rect.top, rect.right, rect.top, paint)
             val lineWidth = rect.height() / 4
-            var index = 0;
+            var index = 0
             var maxIndex = posList.size - 1
             val drawable = XStringDrawable(valueList.get(0))
             drawable.paint.textSize = paint.textSize
@@ -364,21 +332,27 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
             while (index <= maxIndex) {
                 canvas!!.drawLine(posList.get(index), rect.top, posList.get(index), rect.top + lineWidth, paint)
-                rectF.left = posList.get(index) + eachSpace * 3 / 4
-                rectF.right = posList.get(index) - eachSpace / 4
+                rectF.left = posList.get(index) + eachSpace / 2
+                rectF.right = posList.get(index) - eachSpace / 2
                 drawable.name = valueList.get(index)
                 drawable.draw(rectF, canvas)
                 index++
             }
-            canvas!!.restore()
         }
     }
 
     class ValueDrawable () : AxisDrawable<Float, Float>() {
         override fun draw(rect: RectF, canvas: Canvas?) {
+            paint.strokeWidth = 16F
+            paint.color = Color.RED
             canvas!!.save()
             canvas.clipRect(rect)
-
+            var index = 0
+            val size = posList.size
+            while (index < size) {
+                canvas!!.drawPoint(posList.get(index), valueList.get(index), paint)
+                index++
+            }
             canvas!!.restore()
         }
     }
