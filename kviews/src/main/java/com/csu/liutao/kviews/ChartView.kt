@@ -12,6 +12,7 @@ import android.view.ViewManager
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.sp
+import kotlin.math.abs
 
 inline fun ViewManager.chartView(theme : Int = 0, init : ChartView.() -> Unit) : ChartView {
     return ankoView({ChartView(it)},theme, init)
@@ -93,8 +94,11 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
             val dis = e2!!.x - prevX
+            val lastMoveD = moveDis
             moveDis += dis
-            if (moveDis <= leftMoveDis && moveDis >= 0) {
+            if (moveDis < 0) moveDis = 0F
+            if (moveDis > leftMoveDis) moveDis = leftMoveDis
+            if (abs(lastMoveD - moveDis) > Float.MIN_VALUE) {
                 caculateXList()
                 xAxisDrawable.setPosList(xValuePosList)
                 xAxisDrawable.setValueList(xAxisList)
