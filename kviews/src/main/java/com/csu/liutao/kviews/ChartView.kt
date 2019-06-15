@@ -196,7 +196,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         var num = -1;
         xAxisList.clear()
         xValuePosList.clear()
-        while (index > 0 && num < xMaxCount) {
+        while (index >= 0 && num <= xMaxCount) {
             xAxisList.add(xList.get(index))
             xValuePosList.add(dataRect.right - (xList.size - 1 - index) * eachSpace + moveDis)
             yValuePosList.add(dataRect.bottom - (yList.get(index) - yAxisList.get(0)) * yEachSpace)
@@ -332,8 +332,8 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
             canvas!!.save()
             val clipRect = RectF(rect)
-            clipRect.left = rect.left - eachSpace / 2
-            clipRect.right = rect.right + eachSpace / 2
+            clipRect.left = rect.left - rect.height() / 2
+            clipRect.right = rect.right + rect.height() / 2
             canvas!!.clipRect(clipRect)
             while (index <= maxIndex) {
                 canvas!!.drawLine(posList.get(index), rect.top, posList.get(index), rect.top + lineWidth, paint)
