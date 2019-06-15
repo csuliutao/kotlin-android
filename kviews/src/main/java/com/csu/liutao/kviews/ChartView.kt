@@ -74,7 +74,6 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
     private var moveDis = 0F
     private var leftMoveDis = 0F
-    private var eachSpace = 0F
 
     init {
         titleDrawable.paint.textSize = context.sp(16).toFloat()
@@ -86,18 +85,24 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     }
 
     private val gestureDetector = GestureDetector(object : GestureDetector.SimpleOnGestureListener() {
+        var prevX = 0F
         override fun onDown(e: MotionEvent?): Boolean {
+            prevX = e!!.x
             return xList.size > (xMaxCount + 1)
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-            val dis = e2!!.x - e1!!.x
-            Log.e("liutao-dis", "dis = {$dis}")
-            if (isCanScroll(dis < 0)) {
-                moveDis += dis
+            val dis = e2!!.x - prevX
+            moveDis += dis
+            if (moveDis <= leftMoveDis && moveDis >= 0) {
                 caculateXList()
+                xAxisDrawable.setPosList(xValuePosList)
+                xAxisDrawable.setValueList(xAxisList)
+                valueDrawable.setPosList(xValuePosList)
+                valueDrawable.setValueList(yValuePosList)
                 invalidate()
             }
+            prevX = e2!!.x
             return true
         }
     })
@@ -138,19 +143,18 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         xUnitRect.bottom = measuredHeight - xHeight / 2F
         xUnitRect.top = xUnitRect.bottom - xHeight
 
-        eachSpace = (measuredWidth - yWidth * 2).toFloat() / xMaxCount
-        leftMoveDis = if(xList.size <= xMaxCount) 0F else (xList.size - xMaxCount) * eachSpace
+        val eachSpace = (measuredWidth - yWidth * 2).toFloat() / xMaxCount
+        leftMoveDis = if(xList.size <= xMaxCount) 0F else (xList.size - xMaxCount - 1) * eachSpace
 
         caculateYList()
 
         caculateXList()
 
-        xAxisDrawable.setPosList(xValuePosList)
-        xAxisDrawable.setValueList(xAxisList)
-
         yAxisDrawable.setPosList(yPosList)
         yAxisDrawable.setValueList(yAxisList)
 
+        xAxisDrawable.setPosList(xValuePosList)
+        xAxisDrawable.setValueList(xAxisList)
         valueDrawable.setPosList(xValuePosList)
         valueDrawable.setValueList(yValuePosList)
     }
@@ -166,14 +170,6 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         return gestureDetector.onTouchEvent(event)
-    }
-
-    private fun isCanScroll(isRight : Boolean = false) : Boolean {
-        if (isRight) {
-            return moveDis > 0
-        } else {
-            return moveDis < leftMoveDis
-        }
     }
 
     fun setChartData(xValues : MutableList<String>, yValues : MutableList<Int>, xNum : Int = DEFAULT_SPACE_NUM, yNum : Int = DEFAULT_SPACE_NUM) {
@@ -328,16 +324,22 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
             val rectF = RectF()
             rectF.top = rect.top + lineWidth
             rectF.bottom = rect.bottom - lineWidth
-            val eachSpace = posList.get(1) - posList.get(0)
+            val eachSpace = posList.get(0) - posList.get(1)
 
+            canvas!!.save()
+            val clipRect = RectF(rect)
+            clipRect.left = rect.left - eachSpace / 2
+            clipRect.right = rect.right + eachSpace / 2
+            canvas!!.clipRect(clipRect)
             while (index <= maxIndex) {
                 canvas!!.drawLine(posList.get(index), rect.top, posList.get(index), rect.top + lineWidth, paint)
-                rectF.left = posList.get(index) + eachSpace / 2
-                rectF.right = posList.get(index) - eachSpace / 2
+                rectF.left = posList.get(index) - eachSpace / 2
+                rectF.right = posList.get(index) + eachSpace / 2
                 drawable.name = valueList.get(index)
                 drawable.draw(rectF, canvas)
                 index++
             }
+            canvas!!.restore()
         }
     }
 
