@@ -16,9 +16,11 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 const val RECYCLE_LAYOUT = 6;
 const val RECYCLE_VIEW = 7
+const val CHART_VIEW = 7
 class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
         chartView {
+            id = CHART_VIEW
             layoutParams = ViewGroup.LayoutParams(matchParent, dip(200))
         }
     }
