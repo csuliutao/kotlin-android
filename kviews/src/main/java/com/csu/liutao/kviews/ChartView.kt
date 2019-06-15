@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -13,6 +12,8 @@ import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.sp
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 inline fun ViewManager.chartView(theme : Int = 0, init : ChartView.() -> Unit) : ChartView {
     return ankoView({ChartView(it)},theme, init)
@@ -29,13 +30,14 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     private val yValuePosList = mutableListOf<Float>()
     private val xValuePosList = mutableListOf<Float>()
 
-    private var xMaxCount = DEFAULT_SPACE_NUM
+    private var xCount = DEFAULT_SPACE_NUM
         set(value) {
-            field = if (value < DEFAULT_SPACE_NUM) DEFAULT_SPACE_NUM else value
+            field = if (value >= xList.size) xList.size - 1 else value
+            field = min(field, 2 * DEFAULT_SPACE_NUM)
         }
     private var yCount = DEFAULT_SPACE_NUM
         set(value) {
-            field = if (value < DEFAULT_SPACE_NUM) DEFAULT_SPACE_NUM else value
+            field = if (value > DEFAULT_SPACE_NUM) DEFAULT_SPACE_NUM else value
         }
 
     var title :String? = "test chart"
@@ -89,7 +91,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         var prevX = 0F
         override fun onDown(e: MotionEvent?): Boolean {
             prevX = e!!.x
-            return xList.size > (xMaxCount + 1)
+            return xList.size > (xCount + 1)
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
@@ -147,8 +149,8 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         xUnitRect.bottom = measuredHeight - xHeight / 2F
         xUnitRect.top = xUnitRect.bottom - xHeight
 
-        val eachSpace = (measuredWidth - yWidth * 2).toFloat() / xMaxCount
-        leftMoveDis = if(xList.size <= xMaxCount) 0F else (xList.size - xMaxCount - 1) * eachSpace
+        val eachSpace = (measuredWidth - yWidth * 2).toFloat() / xCount
+        leftMoveDis = if(xList.size <= xCount) 0F else (xList.size - xCount - 1) * eachSpace
 
         caculateYList()
 
@@ -183,20 +185,20 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         yList.clear()
         yList.addAll(yValues)
 
-        xMaxCount = xNum
+        xCount = xNum
         yCount = yNum
     }
 
     private fun caculateXList() {
         val yEachSpace = dataRect.height() / (yAxisList.get(yCount) - yAxisList.get(0))
 
-        val eachSpace = dataRect.width() / xMaxCount
+        val eachSpace = dataRect.width() / xCount
         val movePos = (moveDis / eachSpace).toInt()
         var index = xList.size - 1 - movePos
         var num = -1;
         xAxisList.clear()
         xValuePosList.clear()
-        while (index >= 0 && num <= xMaxCount) {
+        while (index >= 0 && num <= xCount) {
             xAxisList.add(xList.get(index))
             xValuePosList.add(dataRect.right - (xList.size - 1 - index) * eachSpace + moveDis)
             yValuePosList.add(dataRect.bottom - (yList.get(index) - yAxisList.get(0)) * yEachSpace)
@@ -351,6 +353,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         override fun draw(rect: RectF, canvas: Canvas?) {
             paint.strokeWidth = 16F
             paint.color = Color.RED
+            paint.strokeCap = Paint.Cap.ROUND
             canvas!!.save()
             canvas.clipRect(rect)
             var index = 0

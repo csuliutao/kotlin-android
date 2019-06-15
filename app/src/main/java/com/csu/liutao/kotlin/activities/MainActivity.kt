@@ -20,10 +20,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainUI().setContentView(this)
+        testChartView()
+    }
+
+    private fun testChartView() {
         val view = findViewById<ChartView>(CHART_VIEW)
         val xValues = mutableListOf("3/10", "3/11", "3/12", "3/13", "3/14", "3/15", "3/16", "3/17", "3/18")
         val yValues = mutableListOf(5, 4, 5, 6, 8, 2, 3, 5, 7)
+        /*val xValues = mutableListOf("3/10", "3/11")
+        val yValues = mutableListOf(5, 4)*/
         view.setChartData(xValues, yValues)
         view.show()
     }
+
 }
