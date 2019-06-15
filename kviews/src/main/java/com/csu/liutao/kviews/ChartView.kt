@@ -58,11 +58,9 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     var yWidth = dip(PADDING_WIDTH)
     var xHeight = dip(PADDING_WIDTH)
 
-    var lineWidth = DEFAULT_LINE_WIDTH
-
-    var valueDrawable = ValueDrawable()
-    var xAxisDrawable = XAxisDrawable()
-    var yAxisDrawable = YAxisDrawable()
+    var valueDrawable : AxisDrawable<Float, Float> = ValueDrawable()
+    var xAxisDrawable : AxisDrawable<Float, String> = XAxisDrawable()
+    var yAxisDrawable : AxisDrawable<Float, Int> = YAxisDrawable()
 
     var xUnitDrawable : StringDrawable = XStringDrawable(xUnit)
     var yUnitDrawable : StringDrawable = YStringDrawable(yUnit)
@@ -79,6 +77,15 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     private var moveDis = 0F
     private var leftMoveDis = 0F
     private var eachSpace = 0F
+
+    init {
+        titleDrawable.paint.textSize = context.sp(16).toFloat()
+        xUnitDrawable.paint.textSize = context.sp(10).toFloat()
+        yUnitDrawable.paint.textSize = context.sp(10).toFloat()
+        valueDrawable.paint.textSize = context.sp(10).toFloat()
+        xAxisDrawable.paint.textSize = context.sp(10).toFloat()
+        xAxisDrawable.paint.textSize = context.sp(10).toFloat()
+    }
 
     private val gestureDetector = GestureDetector(object : GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent?): Boolean {
@@ -235,7 +242,6 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     companion object{
         val DEFAULT_SPACE_NUM = 5
         val PADDING_WIDTH = 32
-        val DEFAULT_LINE_WIDTH = 2
     }
 
 
@@ -243,9 +249,11 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         fun draw(rect: RectF, canvas: Canvas?)
     }
 
-    abstract class StringDrawable(var name: String?) : RectDrawable{}
+    abstract class StringDrawable(var name: String?) : RectDrawable{
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    }
 
-    inner class VerticalDrawable(val xAxisDrawable : RectDrawable){
+    class VerticalDrawable(val xAxisDrawable : RectDrawable){
         fun translateXAxisRectFromY(rect: RectF) : RectF {
             val centerX = rect.centerX()
             val centerY = rect.centerY()
@@ -264,11 +272,9 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         }
     }
 
-    inner class XStringDrawable(name :String?) : StringDrawable(name){
+    class XStringDrawable(name :String?) : StringDrawable(name){
         override fun draw(rect: RectF, canvas: Canvas?) {
             if (TextUtils.isEmpty(name)) return
-            val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-            paint.textSize = context.sp(PADDING_WIDTH).toFloat()
 
             var measureRect = Rect()
             paint.getTextBounds(name, 0, name!!.length, measureRect)
@@ -291,7 +297,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         }
     }
 
-    inner class YStringDrawable(name :String?) : StringDrawable(name){
+    class YStringDrawable(name :String?) : StringDrawable(name){
         var drawable : VerticalDrawable? = null
         init {
             drawable = VerticalDrawable(XStringDrawable(name))
@@ -304,6 +310,7 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
     abstract class AxisDrawable<T, U>() : RectDrawable {
         val posList : MutableList<T> = mutableListOf()
         val valueList : MutableList<U> = mutableListOf()
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
         fun setPosList(list : MutableList<T>) {
             posList.clear()
@@ -316,25 +323,58 @@ class ChartView(context: Context, attrs : AttributeSet? = null, defStyle : Int =
         }
     }
 
-    inner class YAxisDrawable() : AxisDrawable<Float, Int>() {
+    class YAxisDrawable() : AxisDrawable<Float, Int>() {
+        override fun draw(rect: RectF, canvas: Canvas?) {
+            canvas!!.drawLine(rect.right, rect.top, rect.right, rect.bottom, paint)
+            val lineWidth = rect.width() / 4
+            var index = 0;
+            var maxIndex = posList.size - 2
+            val drawable = XStringDrawable(valueList.get(0).toString())
+            drawable.paint.textSize = paint.textSize
+            val rectF = RectF()
+            rectF.left = rect.left + lineWidth
+            rectF.right = rect.right - lineWidth
+            val eachSpace = posList.get(1) - posList.get(0)
+
+            while (index <= maxIndex) {
+                canvas!!.drawLine(rect.right, posList.get(index), rect.right - lineWidth, posList.get(index), paint)
+                rectF.bottom = posList.get(index) - eachSpace / 4
+                rectF.top = posList.get(index + 1) - eachSpace / 4
+                drawable.name = valueList.get(index).toString()
+                drawable.draw(rectF, canvas)
+                index++
+            }
+        }
+    }
+
+    class XAxisDrawable() : AxisDrawable<Float, String>() {
         override fun draw(rect: RectF, canvas: Canvas?) {
             canvas!!.save()
             canvas.clipRect(rect)
+            canvas!!.drawLine(rect.left, rect.top, rect.right, rect.top, paint)
+            val lineWidth = rect.height() / 4
+            var index = 0;
+            var maxIndex = posList.size - 1
+            val drawable = XStringDrawable(valueList.get(0))
+            drawable.paint.textSize = paint.textSize
+            val rectF = RectF()
+            rectF.top = rect.top + lineWidth
+            rectF.bottom = rect.bottom - lineWidth
+            val eachSpace = posList.get(1) - posList.get(0)
 
+            while (index <= maxIndex) {
+                canvas!!.drawLine(posList.get(index), rect.top, posList.get(index), rect.top + lineWidth, paint)
+                rectF.left = posList.get(index) + eachSpace * 3 / 4
+                rectF.right = posList.get(index) - eachSpace / 4
+                drawable.name = valueList.get(index)
+                drawable.draw(rectF, canvas)
+                index++
+            }
             canvas!!.restore()
         }
     }
 
-    inner class XAxisDrawable() : AxisDrawable<Float, String>() {
-        override fun draw(rect: RectF, canvas: Canvas?) {
-            canvas!!.save()
-            canvas.clipRect(rect)
-
-            canvas!!.restore()
-        }
-    }
-
-    inner class ValueDrawable () : AxisDrawable<Float, Float>() {
+    class ValueDrawable () : AxisDrawable<Float, Float>() {
         override fun draw(rect: RectF, canvas: Canvas?) {
             canvas!!.save()
             canvas.clipRect(rect)
