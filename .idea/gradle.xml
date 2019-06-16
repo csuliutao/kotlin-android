@@ -9,7 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/kjson" />
+            <option value="$PROJECT_DIR$/keventbus" />
+            <option value="$PROJECT_DIR$/khttp" />
             <option value="$PROJECT_DIR$/kviews" />
           </set>
         </option>

@@ -1,1 +1,1 @@
-include ':app', ':kviews', ':kjson'
+include ':app', ':kviews', ':khttp', ':keventbus'

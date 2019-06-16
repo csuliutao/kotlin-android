@@ -21,13 +21,13 @@ const val CHART_VIEW = 7
 const val TEXT_VIEW = 8
 class MainUI : AnkoComponent<Activity> {
     override fun createView(ui: AnkoContext<Activity>): View = with(ui) {
-        chartView {
+        /*chartView {
             id = CHART_VIEW
             layoutParams = ViewGroup.LayoutParams(matchParent, dip(200))
-        }
-        /*textView {
+        }*/
+        textView {
             id = TEXT_VIEW
             layoutParams = ViewGroup.LayoutParams(matchParent, wrapContent)
-        }*/
+        }
     }
 }

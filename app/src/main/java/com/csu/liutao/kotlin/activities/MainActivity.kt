@@ -4,11 +4,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.TextView
 import com.csu.liutao.kotlin.adapters.TestAdapter
-import com.csu.liutao.kotlin.layouts.CHART_VIEW
-import com.csu.liutao.kotlin.layouts.MainUI
-import com.csu.liutao.kotlin.layouts.RECYCLE_LAYOUT
-import com.csu.liutao.kotlin.layouts.RECYCLE_VIEW
+import com.csu.liutao.kotlin.layouts.*
 import com.csu.liutao.kviews.ChartView
 import com.csu.liutao.kviews.FloatCircleWindow
 import com.csu.liutao.kviews.SwipeRecyclerLayout
@@ -20,7 +18,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainUI().setContentView(this)
-        testChartView()
+//        testChartView()
+        testJson()
+    }
+
+    private fun testJson() {
+        val textView = findViewById<TextView>(TEXT_VIEW)
+        textView.text = "you lanchun"
     }
 
     private fun testChartView() {
